@@ -1,0 +1,320 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from math import sqrt, pi
+import matplotlib
+from matplotlib.animation import FuncAnimation
+matplotlib.rcParams['animation.embed_limit'] = 2**128
+plt.rcParams['animation.html'] = 'jshtml' #IMPORTANT FOR BETTER VIEW 
+
+step_dphi = 10**(-3)
+
+def dr_dphi(radius, schwarch_radius, impact_parameter):
+    '''differential equation dr/dphi
+    '''
+    return radius*sqrt((radius/impact_parameter)**2 - (1 - (schwarch_radius/radius)))
+
+def new_radius(radius, schwarch_radius, impact_parameter):
+    '''returns 1 interation of r using a 
+    specified intial condition r_0'''
+    return radius + dr_dphi(radius, schwarch_radius, impact_parameter) * step_dphi
+
+def new_phi(phi):
+    '''returns 1 interation of phi using a 
+    specified intial condition phi_0'''
+    return phi + step_dphi
+
+def iterate_radius_phi(radius, phi, schwarch_radius, impact_parameter, number):
+    '''this will take the first r0 and phi0 and use 
+    it to find what r1 and phi1 is, then it will use 
+    r1 and phi1 to find r2 and phi2 to find, this will iterate
+    a number of time'''
+    
+    data_radius = [radius] #initial condition
+    phi_data = [phi] #initial condition
+    '''lets store our data up in an
+    empty list that we will update,
+    we will iterate this n number of
+    times'''
+    for step in range(number): 
+        data_radius.append(new_radius(data_radius[step], schwarch_radius, impact_parameter))
+    for step in range(number):
+        phi_data.append(new_phi(phi_data[step]))
+        
+    return np.array([data_radius, phi_data]) #first element is radius and 2nd is phi
+    
+    #================================================================================
+#loop array
+#================================================================================
+x2_ = iterate_radius_phi(1.5, 4.51/5*np.pi, 1 ,2.598, 6350)
+
+x3_ = iterate_radius_phi(1.5, -1/6*np.pi, 1 ,2.598, 6350)
+good_loop_l = np.where((3/2*np.pi <= x2_[1]))
+good_loop_r = np.where((1/2*np.pi < x3_[1]))
+
+r_in = x2_[0][good_loop_l][::-1]
+r_out = x3_[0][good_loop_r]
+
+
+for i in r_out:
+    r_in = np.append(r_in, i)
+    r_loop = r_in 
+
+phi_in = x2_[1][good_loop_l][::-1]
+phi_out = -x3_[1][good_loop_r]+2*np.pi
+
+for i in phi_out: 
+    phi_in = np.append(phi_in, i)
+    phi_loop = phi_in
+
+
+loop = np.array([r_loop,phi_loop])
+#================================================================================
+#loop array
+#================================================================================
+
+def combine_arrays(array1, array2):
+    '''given two arrays, i.e array1 = [[r],[phi]]
+    where r, phi = [],[] append the first array to 
+    include both array1 and array2 aka stack the arrays
+    Remember, we plot the incoming photon and the outgoing photon
+    as (r,phi) = (r1,phi1)&(-r2,phi2)'''
+    r_in = array1[0][::-1]
+    phi_in = array1[1][::-1]
+    r_out = array2[0]
+    phi_out = -array2[1] + 2*np.pi
+    
+    for r in r_out:
+        r_in = np.append(r_in, r)
+        r_new = r_in 
+    for phi in phi_out: 
+        phi_in = np.append(phi_in, phi)
+        phi_new = phi_in
+    return np.array([r_new, phi_new])
+    
+    #THE DATA
+x0 = iterate_radius_phi(1.01, .967*np.pi, 1 ,.1, 95)
+x1 = iterate_radius_phi(1.01, 5.027/6 *np.pi, 1 , 0.5, 450)
+
+x2 = iterate_radius_phi(1.01, 4/6*np.pi, 1 ,1, 930)
+x3 = iterate_radius_phi(1.01, 4.703/5*np.pi/2, 1 ,1.5, 1510)
+x4 = iterate_radius_phi(1.01, 1.18/6*np.pi, 1 ,2, 2300)
+x5 = iterate_radius_phi(1.01, 6.161/5*np.pi, 1 ,2.598, 11550)
+loop = np.array([r_loop[::-1],phi_loop[::-1]])
+x6l= iterate_radius_phi(2.2267, .228*np.pi, 1 ,3, 2125)
+x6r = iterate_radius_phi(2.2267, -.2356*np.pi, 1 ,3,2125)
+x7l = iterate_radius_phi(2.8087, .325*np.pi, 1 ,3.5,1800)
+x7r = iterate_radius_phi(2.8087, -.325*np.pi, 1 ,3.5,1800)
+x8l = iterate_radius_phi(3.351, .375*np.pi, 1 ,4,1600)
+x8r = iterate_radius_phi(3.351, -.375*np.pi, 1 ,4,1600)
+x9l = iterate_radius_phi(3.877, 2.40/6*np.pi, 1 ,4.5, 1450)
+x9r = iterate_radius_phi(3.877, -2.40/6*np.pi, 1 ,4.5, 1450)
+x10l = iterate_radius_phi(4.395, 2.50/6*np.pi, 1 ,5,1350)
+x10r = iterate_radius_phi(4.395, -2.50/6*np.pi, 1 ,5,1350)
+x11l = iterate_radius_phi(4.908, 2.57/6*np.pi, 1 ,5.5, 1230)
+x11r = iterate_radius_phi(4.908, -2.57/6*np.pi, 1 ,5.5, 1230)
+x12l = iterate_radius_phi(5.419, 2.66/6*np.pi, 1 ,6, 1130)
+x12r = iterate_radius_phi(5.419, -2.66/6*np.pi, 1 ,6, 1130)
+x13l = iterate_radius_phi(5.927, 2.73/6*np.pi, 1 ,6.5, 1100)
+x13r = iterate_radius_phi(5.927, -2.73/6*np.pi, 1 ,6.5, 1100)
+x14l = iterate_radius_phi(6.433, 2.76/6*np.pi, 1 , 7, 1000)
+x14r= iterate_radius_phi(6.433, -2.76/6*np.pi, 1 , 7, 1000)
+
+#we need to combine incoming and outcoming photons trajectories, lets create a function to do this
+def combine_arrays(array1, array2):
+    '''given two arrays, i.e array1 = [[r],[phi]]
+    where r, phi = [],[] append the first array to 
+    include both array1 and array2 aka stack the arrays
+    Remember, we plot the incoming photon and the outgoing photon
+    as (r,phi) = (r1,phi1)&(-r2,phi2)'''
+    r_in = array1[0][::-1]
+    phi_in = array1[1][::-1]
+    r_out = array2[0]
+    phi_out = -array2[1] + 2*np.pi
+    
+    for r in r_out:
+        r_in = np.append(r_in, r)
+        r_new = r_in 
+    for phi in phi_out: 
+        phi_in = np.append(phi_in, phi)
+        phi_new = phi_in
+    return np.array([r_new, phi_new])
+x1_ = np.array([x1[0], -x1[1]])
+x2_ = np.array([x2[0], -x2[1]])
+x3_ = np.array([x3[0], -x3[1]])
+x4_ = np.array([x4[0], -x4[1]])
+x6 = combine_arrays(x6l, x6r)
+x7 = combine_arrays(x7l, x7r)
+x8 = combine_arrays(x8l, x8r)
+x9 = combine_arrays(x9l, x9r)
+x10 = combine_arrays(x10l, x10r)
+x11 = combine_arrays(x11l, x11r)
+x12 = combine_arrays(x12l, x12r)
+x13 = combine_arrays(x13l, x13r)
+x14 = combine_arrays(x14l, x14r)
+
+x0 = iterate_radius_phi(1.01, .999*np.pi, 1 ,.1, 95)
+x0[0][::-1]
+
+fig, ax = plt.subplots(subplot_kw={'projection': 'polar'}, figsize= (10,8))
+ax.set_title('Photon Trajectories', fontsize = 18)
+ax.set_xlabel('$\\tilde{r} = \\frac{r}{r_s}$', fontsize = 18)
+ax.set_rticks([2,4,6,8])
+ax.set_rlabel_position(-22.5)  # Move radial labels away from plotted line
+
+
+ax.plot(x0[1], x0[0])
+
+ax.plot(x1[1],x1[0]) 
+ax.plot(-x1[1],x1[0]) 
+
+ax.plot(x2[1], x2[0])#, c = 'lightseagreen')
+ax.plot(-x2[1], x2[0])#, c = 'lightseagreen')
+
+
+ax.plot(x3[1],x3[0]) 
+ax.plot(-x3[1],x3[0])
+
+ax.plot(x4[1], x4[0])#, c = 'crimson')
+ax.plot(-x4[1], x4[0])#, c = 'crimson')
+
+
+#ax.plot(x6l[1], x6l[0], c = 'teal', linestyle = '--')
+#ax.plot(-x6r[1], x6r[0], c = 'teal')
+ax.plot(x6[1], x6[0])
+
+#ax.plot(x7l[1], x7l[0], c = 'orangered',linestyle = '--')
+#ax.plot(-x7r[1], x7r[0], c = 'orangered')
+ax.plot(x7[1], x7[0])
+
+#ax.plot(x8l[1], x8l[0], c = 'green',linestyle = '--')
+#ax.plot(-x8r[1], x8r[0], c = 'green')
+ax.plot(x8[1], x8[0])
+
+#ax.plot(x9l[1], x9l[0], c = 'fuchsia',linestyle = '--')
+#ax.plot(-x9r[1], x9r[0], c = 'fuchsia')
+ax.plot(x9[1], x9[0])
+
+#ax.plot(x10l[1], x10l[0], c = 'olivedrab',linestyle = '--')
+#ax.plot(-x10r[1], x10r[0], c = 'olivedrab')
+ax.plot(x10[1], x10[0])
+
+
+
+#ax.plot(x11l[1], x11l[0], c = 'royalblue',linestyle = '--')
+#ax.plot(-x11r[1], x11r[0], c = 'royalblue')
+
+ax.plot(x11[1], x11[0])
+
+#ax.plot(x12l[1], x12l[0], c = 'deeppink',linestyle = '--')
+#ax.plot(-x12r[1], x12r[0], c = 'deeppink')
+ax.plot(x12[1], x12[0])
+
+
+#ax.plot(x13l[1], x13l[0], c = 'seagreen',linestyle = '--')
+#ax.plot(-x13r[1], x13r[0], c = 'seagreen')
+ax.plot(x13[1], x13[0])
+
+#ax.plot(x14l[1], x14l[0], c = 'darkcyan',linestyle = '--')
+#ax.plot(-x14r[1], x14r[0], c = 'darkcyan')
+ax.plot(x14[1], x14[0])
+
+ax.plot(x5[1], x5[0], color = 'darkorchid', label = 'Photon sphere')
+ax.plot(loop[1], loop[0], color = 'darkorchid')
+
+ax.plot(0, 0, marker = 'o', color = 'black', markersize = 47.5) #label = 'Within Shwarzchild Radius')
+#ax.fill_between(np.linspace(0.0, 2*np.pi,100), np.ones(100), color ='black', label = 'Black Hole')
+ax.plot(np.linspace(0,2* np.pi,100), np.ones(100),color = 'black')
+
+angle = np.deg2rad(55)
+#ax.legend(loc="lower left",
+#          bbox_to_anchor=(.5 + np.cos(angle)/2, .5 + np.sin(angle)/2), fontsize = 14)
+ax.set_rlim(0,9)
+
+plt.savefig('photon_trajectories.png', format = 'png', dpi=160)
+
+'''Animation'''
+
+_x0 = iterate_radius_phi(1.01, .967*np.pi, 1 ,.1, 95)
+_x1 = np.array([x1[0][::-1],x1[1][::-1]])
+
+_x1_ = np.array([x1_[0][::-1], x1_[1][::-1]])
+_x2 = np.array([x2[0][::-2],x2[1][::-2]])
+_x2_ = np.array([x2_[0][::-2], x2_[1][::-2]])
+_x3 = np.array([x3[0][::-3], x3[1][::-3]])
+_x3_ =  np.array([x3_[0][::-3], x3_[1][::-3]])
+_x4 = np.array([x4[0][::-4], x4[1][::-4]])
+_x4_ = np.array([x4_[0][::-4], x4_[1][::-4]])
+_x5 = np.array([x5[0][::-4], x5[1][::-4]])
+_loop = np.array([loop[0][::-4], loop[1][::-4]])
+_x6 = np.array([x6[0][::4], x6[1][::4]])
+_x7 = np.array([x7[0][::4], x7[1][::4]])
+_x8 = np.array([x8[0][::4], x8[1][::4]])
+_x9 = np.array([x9[0][::4], x9[1][::4]])
+_x10 = np.array([x10[0][::4], x10[1][::4]])
+_x11 = np.array([x11[0][::4], x11[1][::4]])
+_x12 = np.array([x12[0][::4], x12[1][::4]])
+_x13 = np.array([x13[0][::4], x13[1][::4]])
+_x14 = np.array([x14[0][::4], x14[1][::4]])
+
+def index(array):
+    '''lets make sure our data all start around 9 so they fly in at the same time
+    FOR EXAMPLE: so lines start at 0.1--->15, we want to instead start from 0.1 
+    and end right before 10
+    This function take an the list with arrays_i[r,phi] and slices all of them so that
+    the max r is 10'''
+    new_data = []
+    for xi in array:
+        r_less_than_10 = np.where(xi[0]<=10)
+        new_r = xi[0][r_less_than_10]
+        new_phi = xi[1][r_less_than_10]
+        new_data.append(np.array([new_r, new_phi]))
+    return new_data
+datas =[_x0, _x1, _x1_,_x2, _x2_,_x3, _x3_,_x4,_x4_ ,_x5 , _loop,_x6,_x7,_x8,_x9,_x10,_x11,_x12,_x13,_x14]
+plot = index(datas)
+for r_phi in plot:
+    print (len(r_phi[0]))
+fig,ax = plt.subplots(subplot_kw={'projection': 'polar'}, figsize= (10,8))
+
+for i in datas:
+    ax.plot(i[1][:100], i[0][:100])
+#ax.set_facecolor('xkcd:purple')
+ax.set_rlim(0,9)
+ax.plot(0, 0, marker = 'o', color = 'black', markersize = 47) #label = 'Within Shwarzchild Radius')
+len(plot)
+
+import matplotlib
+matplotlib.rcParams['animation.embed_limit'] = 2**128
+plt.rcParams['animation.html'] = 'jshtml' #IMPORTANT FOR BETTER VIEW 
+
+#JAVA HTML  
+'''SET UP FIGURE'''
+fig, ax = plt.subplots(subplot_kw={'projection': 'polar'}, figsize= (10,8))
+#ax.plot(np.linspace(0,2* np.pi,100), np.ones(100),color = 'black', label = 'Black Hole $r_s$')
+ax.set_title('Light Rays in Black Hole', fontsize = 18)
+ax.set_xlabel('$\\tilde{r} = \\frac{r}{r_s}$', fontsize = 18)
+ax.set_rticks([2,4,6,8])
+ax.set_rlabel_position(-22.5) 
+
+angle = np.deg2rad(50)
+#ax.legend(loc="lower left",
+#          bbox_to_anchor=(.5 + np.cos(angle)/2, .5 + np.sin(angle)/2), fontsize = 12)
+'''DONE SETTING UP FIGURE'''
+empty_lines = []
+for i in np.arange(20):
+    line, = ax.plot([],[],)
+    empty_lines.append(line,)
+
+def animate(i):
+    for j in np.arange(20):
+        empty_lines[j].set_data(plot[j][1][:i], plot[j][0][:i])
+    return empty_lines
+#ANIMATION COMMAND
+ax.plot(0, 0, marker = 'o', color = 'black', markersize = 47) #label = 'Within Shwarzchild Radius')
+
+ax.set_rlim(0,9)
+
+#============================================================================
+anim = FuncAnimation(fig, animate, frames = 2888 + 2, interval = 5, blit = True)
+writervideo = matplotlib.animation.FFMpegWriter(fps=60)
+anim.save('test.mp4', writer=writervideo, dpi = 160)
+anim
