@@ -41,37 +41,6 @@ def iterate_radius_phi(radius, phi, schwarch_radius, impact_parameter, number):
         phi_data.append(new_phi(phi_data[step]))
         
     return np.array([data_radius, phi_data]) #first element is radius and 2nd is phi
-    
-    #================================================================================
-#loop array
-#================================================================================
-x2_ = iterate_radius_phi(1.5, 4.51/5*np.pi, 1 ,2.598, 6350)
-
-x3_ = iterate_radius_phi(1.5, -1/6*np.pi, 1 ,2.598, 6350)
-good_loop_l = np.where((3/2*np.pi <= x2_[1]))
-good_loop_r = np.where((1/2*np.pi < x3_[1]))
-
-r_in = x2_[0][good_loop_l][::-1]
-r_out = x3_[0][good_loop_r]
-
-
-for i in r_out:
-    r_in = np.append(r_in, i)
-    r_loop = r_in 
-
-phi_in = x2_[1][good_loop_l][::-1]
-phi_out = -x3_[1][good_loop_r]+2*np.pi
-
-for i in phi_out: 
-    phi_in = np.append(phi_in, i)
-    phi_loop = phi_in
-
-
-loop = np.array([r_loop,phi_loop])
-#================================================================================
-#loop array
-#================================================================================
-
 def combine_arrays(array1, array2):
     '''given two arrays, i.e array1 = [[r],[phi]]
     where r, phi = [],[] append the first array to 
